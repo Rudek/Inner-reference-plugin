@@ -75,16 +75,16 @@ class rms_inner_reference {
             $clear_options['rms_inner_reference_count'] = $options['rms_inner_reference_count'];
         }
 
-        if ( !isset($options['rms_inner_reference_post_type']) ) {
-            $clear_options['rms_inner_reference_post_type'] = 0;
+        if ( !isset($options['rms_inner_reference_type']['post']) ) {
+            $clear_options['rms_inner_reference_type']['post'] = 0;
         } else {
-            $clear_options['rms_inner_reference_post_type'] = 1;
+            $clear_options['rms_inner_reference_type']['post'] = 1;
         }
 
-        if ( !isset($options['rms_inner_reference_page_type']) ) {
-            $clear_options['rms_inner_reference_page_type'] = 0;
+        if ( !isset($options['rms_inner_reference_type']['page']) ) {
+            $clear_options['rms_inner_reference_type']['page'] = 0;
         } else {
-            $clear_options['rms_inner_reference_page_type'] = 1;
+            $clear_options['rms_inner_reference_type']['page'] = 1;
         }
 
         return $clear_options;
@@ -98,13 +98,13 @@ class rms_inner_reference {
 
     public function rms_inner_reference_post_type_cb() {
         $options = get_option('rms_inner_reference_options');?>
-        <input type="checkbox" name="rms_inner_reference_options[rms_inner_reference_post_type]" id="rms_inner_reference_post_type" value="1" <?php checked(1,$options['rms_inner_reference_post_type']); ?> class="regular-text">
+        <input type="checkbox" name="rms_inner_reference_options[rms_inner_reference_type][post]" id="rms_inner_reference_post_type" value="1" <?php checked(1,$options['rms_inner_reference_type']['post']); ?> class="regular-text">
         <?php
     }
 
     public function rms_inner_reference_page_type_cb() {
         $options = get_option('rms_inner_reference_options');?>
-        <input type="checkbox" name="rms_inner_reference_options[rms_inner_reference_page_type]" id="rms_inner_reference_page_type" value="1" <?php checked(1,$options['rms_inner_reference_page_type']); ?>  class="regular-text">
+        <input type="checkbox" name="rms_inner_reference_options[rms_inner_reference_type][page]" id="rms_inner_reference_page_type" value="1" <?php checked(1,$options['rms_inner_reference_type']['page']); ?>  class="regular-text">
         <?php
     }
 
@@ -132,7 +132,6 @@ class rms_inner_reference {
     public function rms_check_inner_reference( $data, $postarr ) {
 
         $post_id = isset( $postarr[ 'ID' ] ) ? $postarr[ 'ID' ] : false;
-        //$post_id = isset( $postarr[ 'post_ID' ] ) ? $postarr[ 'post_ID' ] : false;
 
         if ( ! $post_id )
             return $data;
@@ -143,22 +142,20 @@ class rms_inner_reference {
         $this->transient_name = "save_post_error_{$post_id}_{$this->current_user}";
         delete_option( $this->transient_name );
 
-        //echo '<pre>';
-        //print_r($_POST);
-        //print_r($matches);
-        //print_r($postarr);
-        //print_r($data);
-        //exit;
-
         $pattern = '#<a href="'.home_url().'[^>]+">.+?<\/a>#';
         $options = get_option('rms_inner_reference_options');
-        if ( $data['post_type'] == 'post' || $data['post_type'] == 'page' ) {
-            if ( preg_match_all($pattern, stripslashes($postarr['post_content']), $matches) < $options['rms_inner_reference_count'] ) {
-                update_option( $this->transient_name, true );
-                //if save or update post/page change post_status to draft
-                if ( isset( $postarr[ 'publish' ] ) || isset( $postarr[ 'save' ] ) )
-                    $data[ 'post_status' ] = 'draft';
-            }
+        if ( isset($options['rms_inner_reference_type']) ) {
+            foreach ($options['rms_inner_reference_type'] as $key => $type):
+                if ( !empty($options['rms_inner_reference_type'][$key]) && $data['post_type'] == $key) {
+                    if (preg_match_all($pattern, stripslashes($postarr['post_content']), $matches) < $options['rms_inner_reference_count']) {
+                        update_option($this->transient_name, true);
+                        //if save or update post/page change post_status to draft
+                        if (isset($postarr['publish']) || isset($postarr['save']))
+                            $data['post_status'] = 'draft';
+                    }
+                    break;
+                }
+            endforeach;
         }
 
 
