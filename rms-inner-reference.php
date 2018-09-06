@@ -167,9 +167,10 @@ class rms_inner_reference {
      * Hook check available error for current post and user and print error message in submit box.
      */
     public function rms_submitbox_start_handler() {
+        $options = get_option('rms_inner_reference_options');
         if( get_option($this->transient_name) ) {
             delete_option($this->transient_name);
-            echo '<p style="color:#dc3232;">10 internal links are required to publish this page - Add meaningful and useful links to other pages on this website to publish the page</p>';
+            echo '<p style="color:#dc3232;">' . $options['rms_inner_reference_count'] .' internal links are required to publish this page - Add meaningful and useful links to other pages on this website to publish the page</p>';
         }
 
     }
