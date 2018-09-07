@@ -146,7 +146,7 @@ class rms_inner_reference {
         $options = get_option('rms_inner_reference_options');
         if ( isset($options['rms_inner_reference_type']) ) {
             foreach ($options['rms_inner_reference_type'] as $key => $type):
-                if ( !empty($options['rms_inner_reference_type'][$key]) && $data['post_type'] == $key) {
+                if ( $options['rms_inner_reference_type'][$key] == 1 && $data['post_type'] == $key) {
                     if (preg_match_all($pattern, stripslashes($postarr['post_content']), $matches) < $options['rms_inner_reference_count']) {
                         update_option($this->transient_name, true);
                         //if save or update post/page change post_status to draft
