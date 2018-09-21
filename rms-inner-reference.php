@@ -25,8 +25,8 @@ class rms_inner_reference {
 
         add_filter( 'wp_insert_post_data', array( $this, 'rms_check_inner_reference' ), 99, 2 );
         add_action( 'post_submitbox_start', array($this, 'rms_submitbox_start_handler') );
-        add_action('admin_menu', array($this, 'rms_inner_reference_menu') );
-        add_action('admin_init', array($this, 'rms_inner_reference_settings'));
+        add_action( 'admin_menu', array($this, 'rms_inner_reference_menu') );
+        add_action( 'admin_init', array($this, 'rms_inner_reference_settings'));
 
 
         $this->post_id = isset( $_GET[ 'post' ] ) ? intval( $_GET[ 'post' ] ) : 0;
@@ -52,8 +52,7 @@ class rms_inner_reference {
     }
 
     public function rms_inner_reference_settings() {
-        //print_r(get_option('rms_inner_reference_options'));
-        //exit;
+
         register_setting ( 'rms_inner_reference_options_group', 'rms_inner_reference_options', array($this, 'rms_inner_reference_sanitize') );
 
         // $id, $title, $callback, $page
