@@ -16,7 +16,7 @@ class rms_inner_reference {
     private $transient_name;
     private $current_user;
     private static $instance = null;
-    private const COUNT_INNER_REFERENCE = 10;
+    const COUNT_INNER_REFERENCE = 10;
 
     private function __construct()
     {
